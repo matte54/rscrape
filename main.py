@@ -36,7 +36,7 @@ else:
     sys.exit('Authentication error')
 
 
-def getPopreddits(amount=10):
+def getPopreddits(amount=25):
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=amount):
@@ -137,7 +137,7 @@ def main():
         TOTALWRITES = 0
         for x in SUBREDDITLIST:
             print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
-            idlist = getComments(x, 25)
+            idlist = getComments(x, 30)
             convolist = getStatementAndAnswer(idlist)
             filename, DUPES, WRITES = writeData(convolist)
             TOTALDUPES += DUPES
@@ -152,7 +152,7 @@ def main():
             pass
         print(f'WRITES/DUPES WAS {TOTALDUPES}/{TOTALWRITES}')
         SAVEDIDS = []
-        srs = getPopreddits(30)
+        srs = getPopreddits(40)
         print(f'Adding... {srs}')
 
 if __name__ == "__main__":
