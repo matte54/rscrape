@@ -18,6 +18,7 @@ with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
 
 SAVEDIDS = []
 
+
 def convertUTC(utc):
     x = datetime.utcfromtimestamp(utc)
     return x
@@ -47,12 +48,17 @@ def getPopreddits(amount=25):
     return srlist
 
 
-def getComments(subReddit, amount, filter="hot"):
+def getComments(subReddit, amount, filterSet = False):
     idlist = []
     subreddit = reddit.subreddit(subReddit)
-    print(f'Accessing {subReddit} subreddit...')
-    #figure out how to set this to new if theres to many dupes
-    for post in subreddit.hot(limit=amount):
+    if filterSet == True:
+        filter = subreddit.new
+        flag = "new"
+    else:
+        filter = subreddit.hot
+        flag = "hot"
+    print(f'Accessing {subReddit}({flag}) subreddit...')
+    for post in filter(limit=amount):
         if post.stickied == False and post.over_18 == False and post.score >= 1 and post.num_comments > 3:
             id = post.id
             comment = post.comments
@@ -129,6 +135,7 @@ def cleanup(string):
 
 
 def main():
+    filterflag = False
     while run:
         try:
             CYCLE = 1
@@ -136,7 +143,7 @@ def main():
             TOTALWRITES = 0
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
-                idlist = getComments(x, 30)
+                idlist = getComments(x, 30, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
@@ -147,10 +154,12 @@ def main():
                 time.sleep(30)
                 CYCLE += 1
                 print("-------------------------")
-            if TOTALDUPES > (len(SUBREDDITLIST) * 10) and TOTALWRITES < (len(SUBREDDITLIST) * 2):
-                pass
+            if TOTALDUPES > (len(SUBREDDITLIST) * 10):
+                filterflag = True
                 #change to new for one cycle
-            print(f'WRITES/DUPES WAS {TOTALDUPES}/{TOTALWRITES}')
+            else:
+                filterflag = False
+            print(f'WRITES/DUPES WAS {TOTALWRITES}/{TOTALDUPES}')
             SAVEDIDS = []
             srs = getPopreddits(40)
             print(f'Adding... {srs}')
