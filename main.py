@@ -47,10 +47,11 @@ def getPopreddits(amount=10):
     return srlist
 
 
-def getComments(subReddit, amount):
+def getComments(subReddit, amount, filter="hot"):
     idlist = []
     subreddit = reddit.subreddit(subReddit)
     print(f'Accessing {subReddit} subreddit...')
+    #figure out how to set this to new if theres to many dupes
     for post in subreddit.hot(limit=amount):
         if post.stickied == False and post.over_18 == False and post.score >= 1 and post.num_comments > 3:
             id = post.id
@@ -107,7 +108,7 @@ def writeData(data):
         print(f'Wrote {WRITES} new lines')
     if DUPES > 0:
         print(f'Ignored {DUPES} duplicate lines')
-    return f"./data/conversations_{now.month}.txt"
+    return f"./data/conversations_{now.month}.txt", DUPES
 
 
 #Cleaning up the strings and removing crap
@@ -131,16 +132,23 @@ def main():
     srs = getPopreddits()
     print(f'Adding... {srs}')
     while run:
+        CYCLE = 0
+        TOTALDUPES = 0
         for x in SUBREDDITLIST:
-            #x = random.choice(SUBREDDITLIST)
+            print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
             idlist = getComments(x, 25)
             convolist = getStatementAndAnswer(idlist)
-            filename = writeData(convolist)
+            filename, DUPES = writeData(convolist)
+            TOTALDUPES += DUPES
             filesize = os.stat(filename).st_size
             print(f'{filename[7:]} now {naturalsize(filesize)}')
             print(f"API Friendly wait...30s")
             time.sleep(30)
+            CYCLE += 1
             print("-------------------------")
+        if TOTALDUPES > 300:
+            pass
+        print(f'TOTALDUPES WAS {TOTALDUPES}')
         SAVEDIDS = []
         srs = getPopreddits(30)
         print(f'Adding... {srs}')
