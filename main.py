@@ -13,7 +13,7 @@ with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     lines = f.readlines()
     for line in lines:
         fixedline = line.strip("\n")
-        SUBREDDITLIST.append(fixedline)
+        SUBREDDITLIST.append(fixedline.lower())
 
 
 SAVEDIDS = []
@@ -41,7 +41,8 @@ def getPopreddits(amount=10):
     xr = reddit.subreddits
     for sr in xr.popular(limit=amount):
         if sr not in SUBREDDITLIST:
-            SUBREDDITLIST.append(str(sr))
+            SUBREDDITLIST.append(str(sr).lower())
+            random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
     return srlist
 
@@ -61,6 +62,7 @@ def getComments(subReddit, amount):
 
 def getStatementAndAnswer(idlist):
     convos = []
+    DENIED = 0
     for i in idlist:
         post = reddit.submission(id=i)
         post.comment_sort = "hot"
@@ -80,6 +82,10 @@ def getStatementAndAnswer(idlist):
                 cleandata = cleanup(dirtydata)
                 if cleandata != "":
                     convos.append(cleandata)
+                else:
+                    DENIED += 1
+    if DENIED > 0:
+        print(f'{DENIED} lines IGNORED by cleaning.')
     return convos
 
 def writeData(data):
@@ -107,24 +113,17 @@ def writeData(data):
 #Cleaning up the strings and removing crap
 badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "![", "http"]
 def cleanup(string):
-    DENIED = 0
     no = re.search(r'^(http|<?https?:\S+)|^\s|^\W|^\d+$|^\d|^\s*$', string)
     if no:
         #print(f'{string} DENIED BY CLEANUP! (REGEX)')
-        DENIED += 1
         return ""
     if " / " not in string:
         #print(f'{string} DENIED BY CLEANUP! (NO DASH)')
-        DENIED += 1
         return ""
     for i in badwords:
         if i in string:
             #print(f'{string} DENIED BY CLEANUP!(BAD WORD {i})')
-            DENIED += 1
             return ""
-    if DENIED > 0:
-        print(f'Cleanup removed {DENIED} strings.')
-
     return string
 
 
