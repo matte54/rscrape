@@ -76,7 +76,7 @@ def getStatementAndAnswer(idlist):
                 replies = comment.replies
                 replies.comment_sort = "best"
                 if len(replies) > 0:
-                    if replies[0].score >= 1 and len(replies[0].body) < 50:
+                    if replies[0].score >= 1 and len(replies[0].body) < 60:
                         ANSWER = replies[0].body
             if ANSWER != "":
                 dirtydata = f"{STATEMENT} / {ANSWER}"
@@ -129,31 +129,36 @@ def cleanup(string):
 
 
 def main():
-    srs = getPopreddits()
-    print(f'Adding... {srs}')
     while run:
-        CYCLE = 0
-        TOTALDUPES = 0
-        TOTALWRITES = 0
-        for x in SUBREDDITLIST:
-            print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
-            idlist = getComments(x, 30)
-            convolist = getStatementAndAnswer(idlist)
-            filename, DUPES, WRITES = writeData(convolist)
-            TOTALDUPES += DUPES
-            TOTALWRITES += WRITES
-            filesize = os.stat(filename).st_size
-            print(f'{filename[7:]} now {naturalsize(filesize)}')
-            print(f"API Friendly wait...30s")
-            time.sleep(30)
-            CYCLE += 1
-            print("-------------------------")
-        if TOTALDUPES > 300:
-            pass
-        print(f'WRITES/DUPES WAS {TOTALDUPES}/{TOTALWRITES}')
-        SAVEDIDS = []
-        srs = getPopreddits(40)
-        print(f'Adding... {srs}')
+        try:
+            CYCLE = 1
+            TOTALDUPES = 0
+            TOTALWRITES = 0
+            for x in SUBREDDITLIST:
+                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
+                idlist = getComments(x, 30)
+                convolist = getStatementAndAnswer(idlist)
+                filename, DUPES, WRITES = writeData(convolist)
+                TOTALDUPES += DUPES
+                TOTALWRITES += WRITES
+                filesize = os.stat(filename).st_size
+                print(f'{filename[7:]} now {naturalsize(filesize)}')
+                print(f"API Friendly wait...30s")
+                time.sleep(30)
+                CYCLE += 1
+                print("-------------------------")
+            if TOTALDUPES > (len(SUBREDDITLIST) * 10) and TOTALWRITES < (len(SUBREDDITLIST) * 2):
+                pass
+                #change to new for one cycle
+            print(f'WRITES/DUPES WAS {TOTALDUPES}/{TOTALWRITES}')
+            SAVEDIDS = []
+            srs = getPopreddits(40)
+            print(f'Adding... {srs}')
+
+        except prawcore.exceptions.ServerError as e:
+            print(e)
+            time.sleep(10)
+            print('Retrying...')
 
 if __name__ == "__main__":
     main()
