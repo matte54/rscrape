@@ -108,7 +108,7 @@ def writeData(data):
         print(f'Wrote {WRITES} new lines')
     if DUPES > 0:
         print(f'Ignored {DUPES} duplicate lines')
-    return f"./data/conversations_{now.month}.txt", DUPES
+    return f"./data/conversations_{now.month}.txt", DUPES, WRITES
 
 
 #Cleaning up the strings and removing crap
@@ -134,12 +134,14 @@ def main():
     while run:
         CYCLE = 0
         TOTALDUPES = 0
+        TOTALWRITES = 0
         for x in SUBREDDITLIST:
             print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
             idlist = getComments(x, 25)
             convolist = getStatementAndAnswer(idlist)
-            filename, DUPES = writeData(convolist)
+            filename, DUPES, WRITES = writeData(convolist)
             TOTALDUPES += DUPES
+            TOTALWRITES += WRITES
             filesize = os.stat(filename).st_size
             print(f'{filename[7:]} now {naturalsize(filesize)}')
             print(f"API Friendly wait...30s")
@@ -148,7 +150,7 @@ def main():
             print("-------------------------")
         if TOTALDUPES > 300:
             pass
-        print(f'TOTALDUPES WAS {TOTALDUPES}')
+        print(f'WRITES/DUPES WAS {TOTALDUPES}/{TOTALWRITES}')
         SAVEDIDS = []
         srs = getPopreddits(30)
         print(f'Adding... {srs}')
