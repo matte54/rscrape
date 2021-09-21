@@ -37,10 +37,13 @@ else:
 
 
 def getPopreddits(amount=10):
+    srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=amount):
         if sr not in SUBREDDITLIST:
             SUBREDDITLIST.append(str(sr))
+            srlist.append(str(sr))
+    return srlist
 
 
 def getComments(subReddit, amount):
@@ -126,25 +129,22 @@ def cleanup(string):
 
 
 def main():
-    getPopreddits()
-    CYCLES = 0
+    srs = getPopreddits()
+    print(f'Adding... {srs}')
     while run:
-        x = random.choice(SUBREDDITLIST)
-        idlist = getComments(x, 25)
-        convolist = getStatementAndAnswer(idlist)
-        filename = writeData(convolist)
-        filesize = os.stat(filename).st_size
-        print(f'{filename[7:]} now {naturalsize(filesize)}')
-        print(f"API Friendly wait...30s (CYCLE {CYCLES})")
-        time.sleep(30)
-        print("-------------------------")
-        if CYCLES == 25:
-            print("25 loops completed adding other subreddits.")
-            CYCLES = 0
-            SAVEDIDS = []
-            getPopreddits(30)
-        CYCLES += 1
-
+        for x in SUBREDDITLIST:
+            #x = random.choice(SUBREDDITLIST)
+            idlist = getComments(x, 25)
+            convolist = getStatementAndAnswer(idlist)
+            filename = writeData(convolist)
+            filesize = os.stat(filename).st_size
+            print(f'{filename[7:]} now {naturalsize(filesize)}')
+            print(f"API Friendly wait...30s")
+            time.sleep(30)
+            print("-------------------------")
+        SAVEDIDS = []
+        srs = getPopreddits(30)
+        print(f'Adding... {srs}')
 
 if __name__ == "__main__":
     main()
