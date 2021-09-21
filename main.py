@@ -102,7 +102,7 @@ def writeData(data):
 
 
 #Cleaning up the strings and removing crap
-badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "!["]
+badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "![", "http"]
 def cleanup(string):
     DENIED = 0
     no = re.search(r'^(http|<?https?:\S+)|^\s|^\W|^\d+$|^\d|^\s*$', string)
