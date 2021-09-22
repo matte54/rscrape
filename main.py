@@ -7,9 +7,6 @@ import os
 from humanize import naturalsize
 from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 
-SAVEDIDS = []
-SUBREDDITLIST = []
-
 ####VARIABLES TO TWEAK####
 POSTLENGTH = 100 #accepted char length of posts. DEFAULT 100
 UPVOTES = 1 #least number of upvotes needed DEFAULT 1
@@ -46,6 +43,9 @@ def getPopreddits(amount=25):
             random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
     return srlist
+
+SAVEDIDS = []
+SUBREDDITLIST = []
 
 def getComments(subReddit, amount, filterSet = False):
     idlist = []
