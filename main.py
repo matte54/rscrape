@@ -1,7 +1,6 @@
 import praw
 import re
 import sys
-import tqdm
 import datetime, time
 import random
 import os
