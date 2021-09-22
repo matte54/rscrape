@@ -14,9 +14,10 @@ COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 30 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 40 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 30 #seconds to wait between calls DEFAULT 30
-
-SAVEDIDS = []
+#
 SUBREDDITLIST = []
+SAVEDIDS = []
+run = True
 
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     lines = f.readlines()
@@ -34,8 +35,6 @@ if reddit.user.me() == USERNAME:
     print(f"Successfully logged in as {USERNAME}!")
 else:
     sys.exit('Authentication error')
-
-run = True
 
 def getPopreddits(amount=25):
     srlist = []
@@ -153,8 +152,8 @@ def main():
                 CYCLE += 1
                 print("-------------------------")
             if TOTALWRITES < 50:
-                SAVEDIDS = []
-                SUBREDDITLIST = []
+                SAVEDIDS.clear()
+                SUBREDDITLIST.clear()
                 srs = getPopreddits(50)
                 #if this low find rate clear all lists and repopulate.
             if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
@@ -163,7 +162,7 @@ def main():
             else:
                 filterflag = False
             print(f'WRITES/DUPES WAS {TOTALWRITES}/{TOTALDUPES}')
-            SAVEDIDS = []
+            SAVEDIDS.clear()
             srs = getPopreddits(ADD_POP_REDDITS)
             print(f'Adding... {srs}')
 
