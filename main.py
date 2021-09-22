@@ -76,12 +76,12 @@ def getStatementAndAnswer(idlist):
         for comment in post.comments:
             ANSWER = ""
             STATEMENT = ""
-            if comment.stickied == False and comment.score >= 1 and len(comment.body) < 50:
+            if comment.stickied == False and comment.score >= 1 and len(comment.body) < 100:
                 STATEMENT = comment.body
                 replies = comment.replies
                 replies.comment_sort = "best"
                 if len(replies) > 0:
-                    if replies[0].score >= 1 and len(replies[0].body) < 60:
+                    if replies[0].score >= 1 and len(replies[0].body) < 100:
                         ANSWER = replies[0].body
             if ANSWER != "":
                 dirtydata = f"{STATEMENT} / {ANSWER}"
