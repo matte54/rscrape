@@ -15,6 +15,9 @@ GET_NUM_COM = 30 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 40 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 30 #seconds to wait between calls DEFAULT 30
 
+SAVEDIDS = []
+SUBREDDITLIST = []
+
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     lines = f.readlines()
     for line in lines:
@@ -43,9 +46,6 @@ def getPopreddits(amount=25):
             random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
     return srlist
-
-SAVEDIDS = []
-SUBREDDITLIST = []
 
 def getComments(subReddit, amount, filterSet = False):
     idlist = []
