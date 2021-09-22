@@ -7,22 +7,23 @@ import os
 from humanize import naturalsize
 from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 
+run = True
+SAVEDIDS = []
 SUBREDDITLIST = []
+
+####VARIABLES TO TWEAK####
+POSTLENGTH = 100 #accepted char length of posts. DEFAULT 100
+UPVOTES = 1 #least number of upvotes needed DEFAULT 1
+COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
+GET_NUM_COM = 30 #amount of comments to grab per cycle DEFAULT 30
+ADD_POP_REDDITS = 40 #amount of popular reddits to add after first cycle DEFAULT 40
+APITIME = 30 #seconds to wait between calls DEFAULT 30
+
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     lines = f.readlines()
     for line in lines:
         fixedline = line.strip("\n")
         SUBREDDITLIST.append(fixedline.lower())
-
-
-SAVEDIDS = []
-
-
-def convertUTC(utc):
-    x = datetime.utcfromtimestamp(utc)
-    return x
-
-run = True
 
 reddit = praw.Reddit(client_id = CLIENTID, \
                      client_secret = CLIENTSECRET, \
@@ -35,7 +36,6 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
-
 def getPopreddits(amount=25):
     srlist = []
     xr = reddit.subreddits
@@ -45,7 +45,6 @@ def getPopreddits(amount=25):
             random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
     return srlist
-
 
 def getComments(subReddit, amount, filterSet = False):
     idlist = []
@@ -58,7 +57,7 @@ def getComments(subReddit, amount, filterSet = False):
         flag = "hot"
     print(f'Accessing {subReddit}({flag}) subreddit...')
     for post in filter(limit=amount):
-        if post.stickied == False and post.over_18 == False and post.score >= 1 and post.num_comments > 3:
+        if post.stickied == False and post.over_18 == False and post.score >= UPVOTES and post.num_comments > COMMENT_NUM:
             id = post.id
             comment = post.comments
             if post.comments and id not in SAVEDIDS:
@@ -76,12 +75,12 @@ def getStatementAndAnswer(idlist):
         for comment in post.comments:
             ANSWER = ""
             STATEMENT = ""
-            if comment.stickied == False and comment.score >= 1 and len(comment.body) < 100:
+            if comment.stickied == False and comment.score >= UPVOTES and len(comment.body) < POSTLENGTH:
                 STATEMENT = comment.body
                 replies = comment.replies
                 replies.comment_sort = "best"
                 if len(replies) > 0:
-                    if replies[0].score >= 1 and len(replies[0].body) < 100:
+                    if replies[0].score >= UPVOTES and len(replies[0].body) < POSTLENGTH:
                         ANSWER = replies[0].body
             if ANSWER != "":
                 dirtydata = f"{STATEMENT} / {ANSWER}"
@@ -115,7 +114,6 @@ def writeData(data):
         print(f'Ignored {DUPES} duplicate lines')
     return f"./data/conversations_{now.month}.txt", DUPES, WRITES
 
-
 #Cleaning up the strings and removing crap
 badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "![", "http"]
 def cleanup(string):
@@ -132,7 +130,6 @@ def cleanup(string):
             return ""
     return string
 
-
 def main():
     filterflag = False
     while run:
@@ -142,17 +139,23 @@ def main():
             TOTALWRITES = 0
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
-                idlist = getComments(x, 30, filterflag)
+                idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
-                print(f"API Friendly wait...30s")
-                time.sleep(30)
+                print(f'Total writes this cycle:{TOTALWRITES}')
+                print(f"API Friendly wait...{APITIME}s")
+                time.sleep(APITIME)
                 CYCLE += 1
                 print("-------------------------")
+            if TOTALWRITES < 50:
+                SAVEDIDS = []
+                SUBREDDITLIST = []
+                srs = getPopreddits(50)
+                #if this low find rate clear all lists and repopulate.
             if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
                 filterflag = True
                 #change to new for one cycle
@@ -160,7 +163,7 @@ def main():
                 filterflag = False
             print(f'WRITES/DUPES WAS {TOTALWRITES}/{TOTALDUPES}')
             SAVEDIDS = []
-            srs = getPopreddits(40)
+            srs = getPopreddits(ADD_POP_REDDITS)
             print(f'Adding... {srs}')
 
         except prawcore.exceptions.ServerError as e:
