@@ -154,7 +154,7 @@ def main():
                 time.sleep(30)
                 CYCLE += 1
                 print("-------------------------")
-            if TOTALDUPES > (len(SUBREDDITLIST) * 10):
+            if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
                 filterflag = True
                 #change to new for one cycle
             else:
