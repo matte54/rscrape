@@ -7,7 +7,6 @@ import os
 from humanize import naturalsize
 from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 
-run = True
 SAVEDIDS = []
 SUBREDDITLIST = []
 
@@ -35,6 +34,8 @@ if reddit.user.me() == USERNAME:
     print(f"Successfully logged in as {USERNAME}!")
 else:
     sys.exit('Authentication error')
+
+run = True
 
 def getPopreddits(amount=25):
     srlist = []
