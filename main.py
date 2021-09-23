@@ -151,7 +151,7 @@ def main():
                 time.sleep(APITIME)
                 CYCLE += 1
                 print("-------------------------")
-            if TOTALWRITES < 50:
+            if TOTALWRITES < 100:
                 SAVEDIDS.clear()
                 SUBREDDITLIST.clear()
                 srs = getPopreddits(50)
