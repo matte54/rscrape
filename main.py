@@ -11,7 +11,7 @@ from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 POSTLENGTH = 100 #accepted char length of posts. DEFAULT 100
 UPVOTES = 1 #least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
-GET_NUM_COM = 30 #amount of comments to grab per cycle DEFAULT 30
+GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 40 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 30 #seconds to wait between calls DEFAULT 30
 #
