@@ -168,7 +168,15 @@ def main():
 
         except prawcore.exceptions.ServerError as e:
             print(e)
-            time.sleep(10)
+            time.sleep(60)
+            print('Retrying...')
+        except prawcore.exceptions.RequestException as e:
+            print(e)
+            time.sleep(60)
+            print('Retrying...')
+        except requests.exceptions.ReadTimeout as e:
+            print(e)
+            time.sleep(60)
             print('Retrying...')
 
 if __name__ == "__main__":
