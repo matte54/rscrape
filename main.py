@@ -97,9 +97,9 @@ def writeData(data):
     WRITES = 0
     DUPES = 0
     now = datetime.datetime.now()
-    with open(f'./data/conversations_{now.month}.txt', 'a', encoding='utf8') as f:
+    with open(f'./data/conversations_{now.year}_{now.month}.txt', 'a', encoding='utf8') as f:
         for i in data:
-            with open(f'./data/conversations_{now.month}.txt', 'r', encoding='utf8') as fRead:
+            with open(f'./data/conversations_{now.year}_{now.month}.txt', 'r', encoding='utf8') as fRead:
                 if i in fRead.read():
                     #print(f'{i} already excists IGNORING!')
                     DUPES += 1
@@ -112,7 +112,7 @@ def writeData(data):
         print(f'Wrote {WRITES} new lines')
     if DUPES > 0:
         print(f'Ignored {DUPES} duplicate lines')
-    return f"./data/conversations_{now.month}.txt", DUPES, WRITES
+    return f"./data/conversations_{now.year}_{now.month}.txt", DUPES, WRITES
 
 #Cleaning up the strings and removing crap
 badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "![", "http"]
