@@ -106,7 +106,7 @@ def writeData(data):
                     pass
                 else:
                     f.write(i)
-                    f.write("\n\n")
+                    f.write("\n")
                     WRITES += 1
     if WRITES > 0:
         print(f'Wrote {WRITES} new lines')
