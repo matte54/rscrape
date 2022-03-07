@@ -15,6 +15,7 @@ GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 50 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 25 #seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 3 #amount of cycles to leave out limbo subreddits. DEFAULT 2
+LIMBOTRESHOLD = 3 #Minimum amount of entries found to put subreddit in limbo DEFAULT 3
 #
 SUBREDDITLIST = []
 SAVEDIDS = []
@@ -148,10 +149,10 @@ def main():
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
-                if WRITES < 3:
+                if WRITES < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(x)
                     LIMBO.append(x)
-                    print(f'Temporary putting "{x}" in limbo (not enough new entries)')
+                    print(f'Temporary putting "{x}" in limbo (not enough new entries threshold {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
                 print(f'Total writes this cycle:{TOTALWRITES}')
