@@ -42,7 +42,7 @@ def getPopreddits(amount=25):
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=amount):
-        if sr not in SUBREDDITLIST:
+        if sr not in SUBREDDITLIST and sr not in LIMBO:
             SUBREDDITLIST.append(str(sr).lower())
             random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
