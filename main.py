@@ -176,12 +176,14 @@ def main():
             SAVEDIDS.clear()
             srs = getPopreddits()
             print(f'Adding... {srs}')
+            print("-------------------------")
             LIMBOTIME += 1
             if LIMBOTIME == LIMBOCYCLES:
                 print(f'Removing {LIMBO} from limbo.')
                 SUBREDDITLIST.extend(LIMBO)
                 del LIMBO[:]
                 LIMBOTIME = 0
+            print("-------------------------")
 
         except prawcore.exceptions.ServerError as e:
             print(e)
