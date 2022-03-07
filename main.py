@@ -13,10 +13,12 @@ UPVOTES = 1 #least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 50 #amount of popular reddits to add after first cycle DEFAULT 40
-APITIME = 30 #seconds to wait between calls DEFAULT 30
+APITIME = 25 #seconds to wait between calls DEFAULT 30
 #
 SUBREDDITLIST = []
 SAVEDIDS = []
+LIMBO = []
+LIMBOTIME = 0
 run = True
 
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
@@ -144,6 +146,10 @@ def main():
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
+                if WRITES == 0:
+                    SUBREDDITLIST.remove(x)
+                    LIMBO.append(x)
+                    print(f'Temporary removing {x} (nothing new found)')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
                 print(f'Total writes this cycle:{TOTALWRITES}')
@@ -165,6 +171,12 @@ def main():
             SAVEDIDS.clear()
             srs = getPopreddits(ADD_POP_REDDITS)
             print(f'Adding... {srs}')
+            LIMBOTIME += 1
+            if LIMBOTIME == 2:
+                print(f'Removing {LIMBO} from limbo.')
+                SUBREDDITLIST.extend(LIMBO)
+                del LIMBO[:]
+                LIMBOTIME = 0
 
         except prawcore.exceptions.ServerError as e:
             print(e)
