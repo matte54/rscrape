@@ -19,7 +19,6 @@ LIMBOCYCLES = 3 #amount of cycles to leave out limbo subreddits. DEFAULT 2
 SUBREDDITLIST = []
 SAVEDIDS = []
 LIMBO = []
-LIMBOTIME = 0
 run = True
 
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
@@ -135,11 +134,13 @@ def cleanup(string):
 
 def main():
     filterflag = False
+    LIMBOTIME = 0
     while run:
         try:
             CYCLE = 1
             TOTALDUPES = 0
             TOTALWRITES = 0
+            SUBREDDITLIST = list(dict.fromkeys(SUBREDDITLIST)) #check subredditlist for duplicates.
             print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
