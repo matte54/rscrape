@@ -14,6 +14,7 @@ COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 50 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 25 #seconds to wait between calls DEFAULT 30
+LIMBOCYCLES = 2 #amount of cycles to leave out limbo subreddits. DEFAULT 2
 #
 SUBREDDITLIST = []
 SAVEDIDS = []
@@ -172,7 +173,7 @@ def main():
             srs = getPopreddits(ADD_POP_REDDITS)
             print(f'Adding... {srs}')
             LIMBOTIME += 1
-            if LIMBOTIME == 2:
+            if LIMBOTIME == LIMBOCYCLES:
                 print(f'Removing {LIMBO} from limbo.')
                 SUBREDDITLIST.extend(LIMBO)
                 del LIMBO[:]
