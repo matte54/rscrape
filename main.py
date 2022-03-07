@@ -12,7 +12,7 @@ POSTLENGTH = 100 #accepted char length of posts. DEFAULT 100
 UPVOTES = 1 #least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
-ADD_POP_REDDITS = 50 #amount of popular reddits to add after first cycle DEFAULT 40
+ADD_POP_REDDITS = 10 #amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25 #seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 3 #amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 3 #Minimum amount of entries found to put subreddit in limbo DEFAULT 3
@@ -39,14 +39,16 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
-def getPopreddits(amount=25):
+def getPopreddits():
     srlist = []
     xr = reddit.subreddits
-    for sr in xr.popular(limit=amount):
+    for sr in xr.popular(limit=250):
         if sr not in SUBREDDITLIST and sr not in LIMBO:
             SUBREDDITLIST.append(str(sr).lower())
-            random.shuffle(SUBREDDITLIST)
             srlist.append(str(sr))
+            if len(srlist) > ADD_POP_REDDITS:
+                break
+    random.shuffle(SUBREDDITLIST)
     return srlist
 
 def getComments(subReddit, amount, filterSet = False):
@@ -163,7 +165,7 @@ def main():
             if TOTALWRITES < 100:
                 SAVEDIDS.clear()
                 SUBREDDITLIST.clear()
-                srs = getPopreddits(50)
+                srs = getPopreddits()
                 #if this low find rate clear all lists and repopulate.
             if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
                 filterflag = True
@@ -172,7 +174,7 @@ def main():
                 filterflag = False
             print(f'WRITES/DUPES WAS {TOTALWRITES}/{TOTALDUPES}')
             SAVEDIDS.clear()
-            srs = getPopreddits(ADD_POP_REDDITS)
+            srs = getPopreddits()
             print(f'Adding... {srs}')
             LIMBOTIME += 1
             if LIMBOTIME == LIMBOCYCLES:
