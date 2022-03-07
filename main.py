@@ -14,7 +14,7 @@ COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 50 #amount of popular reddits to add after first cycle DEFAULT 40
 APITIME = 25 #seconds to wait between calls DEFAULT 30
-LIMBOCYCLES = 2 #amount of cycles to leave out limbo subreddits. DEFAULT 2
+LIMBOCYCLES = 3 #amount of cycles to leave out limbo subreddits. DEFAULT 2
 #
 SUBREDDITLIST = []
 SAVEDIDS = []
@@ -140,6 +140,7 @@ def main():
             CYCLE = 1
             TOTALDUPES = 0
             TOTALWRITES = 0
+            print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
@@ -147,10 +148,10 @@ def main():
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
-                if WRITES == 0:
+                if WRITES < 3:
                     SUBREDDITLIST.remove(x)
                     LIMBO.append(x)
-                    print(f'Temporary removing {x} (nothing new found)')
+                    print(f'Temporary putting "{x}" in limbo (not enough new entries)')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
                 print(f'Total writes this cycle:{TOTALWRITES}')
