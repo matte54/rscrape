@@ -19,7 +19,7 @@ LIMBOTRESHOLD = 3 #Minimum amount of entries found to put subreddit in limbo DEF
 #
 SUBREDDITLIST = []
 SAVEDIDS = []
-LIMBO = []
+LIMBO = {} # changed to dictionary
 run = True
 
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
@@ -135,9 +135,17 @@ def cleanup(string):
             return ""
     return string
 
+# show whats in limbo for debug
+def show_limbo():
+    if LIMBO:
+        print('========= LIMBO =========')
+        for sr, cycles in LIMBO.items():
+            print(f'{sr} for {cycles} cycles')
+    else:
+        print('Nothing to see here...')
+
 def main():
     filterflag = False
-    LIMBOTIME = 0
     while run:
         try:
             CYCLE = 1
@@ -153,7 +161,7 @@ def main():
                 TOTALWRITES += WRITES
                 if WRITES < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(x)
-                    LIMBO.append(x)
+                    LIMBO[x] = LIMBOCYCLES # Add the subreddit to limbo for some cycles
                     print(f'Temporary putting "{x}" in limbo (not enough new entries threshold {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
@@ -177,12 +185,19 @@ def main():
             srs = getPopreddits()
             print(f'Adding... {srs}')
             print("-------------------------")
-            LIMBOTIME += 1
-            if LIMBOTIME == LIMBOCYCLES:
-                print(f'Removing {LIMBO} from limbo.')
-                SUBREDDITLIST.extend(LIMBO)
-                del LIMBO[:]
-                LIMBOTIME = 0
+
+            # if there's anything in limbo decrement its time by one
+            if LIMBO:
+                for sr in LIMBO:
+                    LIMBO[sr] -= 1
+                # get any subreddit that has 0 cycles left in limbo
+                remove = [sr for sr in LIMBO if LIMBO[sr] < 1]
+                # remove the subreddit from limbo and add it back into the subreddit list
+                for sr in remove:
+                    print(f'Taking {sr} out of limbo...')
+                    del LIMBO[sr]
+                    SUBREDDITLIST.append(sr)
+            show_limbo()
             print("-------------------------")
 
         except prawcore.exceptions.ServerError as e:

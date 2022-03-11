@@ -1,5 +1,7 @@
 __pycache__/
+.idea/
 data/
+venv/
 credentials.py
 test.py
 notes.txt
