@@ -43,7 +43,7 @@ def getPopreddits():
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
-        sr = str(sr(sr).lower()
+        sr = str(sr(sr).lower())
         if sr not in SUBREDDITLIST and sr not in LIMBO:
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
