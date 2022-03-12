@@ -43,9 +43,9 @@ def getPopreddits():
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
-        if sr not in SUBREDDITLIST and sr not in LIMBO:
+        if sr.lower() not in SUBREDDITLIST and sr.lower() not in LIMBO:
             SUBREDDITLIST.append(str(sr).lower())
-            srlist.append(str(sr))
+            srlist.append(str(sr).lower())
             if len(srlist) > ADD_POP_REDDITS:
                 break
     random.shuffle(SUBREDDITLIST)
@@ -153,7 +153,7 @@ def main():
             TOTALWRITES = 0
             print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
-                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}')
+                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, {len(LIMBO)} in limbo')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
@@ -162,7 +162,7 @@ def main():
                 if WRITES < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(x)
                     LIMBO[x] = LIMBOCYCLES # Add the subreddit to limbo for some cycles
-                    print(f'Temporary putting "{x}" in limbo (not enough new entries threshold {LIMBOTRESHOLD})')
+                    print(f'Adding "{x}" to limbo (threshold {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
                 print(f'Total writes this cycle:{TOTALWRITES}')
