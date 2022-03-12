@@ -14,7 +14,7 @@ COMMENT_NUM = 3 #least comments to consider post DEFAULT 3
 GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 10 #amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25 #seconds to wait between calls DEFAULT 30
-LIMBOCYCLES = 3 #amount of cycles to leave out limbo subreddits. DEFAULT 2
+LIMBOCYCLES = 5 #amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 3 #Minimum amount of entries found to put subreddit in limbo DEFAULT 3
 #
 SUBREDDITLIST = []
@@ -152,7 +152,7 @@ def main():
             CYCLE = 1
             TOTALDUPES = 0
             TOTALWRITES = 0
-            print(f'Subreddits in limbo for this run: {LIMBO}')
+            #print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, {len(LIMBO)} in limbo')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
@@ -166,8 +166,8 @@ def main():
                     print(f'Adding "{x}" to limbo (threshold {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
                 print(f'{filename[7:]} now {naturalsize(filesize)}')
-                print(f'Total writes this cycle:{TOTALWRITES}')
-                print(f"API Friendly wait...{APITIME}s")
+                print(f'Total writes this cycle: {TOTALWRITES}')
+                print(f'API Friendly wait...{APITIME}s')
                 time.sleep(APITIME)
                 CYCLE += 1
                 print("-------------------------")
@@ -177,14 +177,17 @@ def main():
                 srs = getPopreddits()
                 #if this low find rate clear all lists and repopulate.
             if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
+                print(f'Switching to NEW for one cycle...')
                 filterflag = True
                 #change to new for one cycle
             else:
                 filterflag = False
-            print(f'WRITES/DUPES WAS {TOTALWRITES}/{TOTALDUPES}')
+            #print(f'DUPES/WRITES WAS {TOTALDUPES}/{TOTALWRITES}')
             SAVEDIDS.clear()
             srs = getPopreddits()
-            print(f'Adding... {srs}')
+            print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
+            for y in srs:
+                print(y)
             print("-------------------------")
 
             # if there's anything in limbo decrement its time by one
@@ -195,10 +198,10 @@ def main():
                 remove = [sr for sr in LIMBO if LIMBO[sr] < 1]
                 # remove the subreddit from limbo and add it back into the subreddit list
                 for sr in remove:
-                    print(f'Taking {sr} out of limbo...')
+                    print(f'Taking "{sr}" out of limbo...')
                     del LIMBO[sr]
                     SUBREDDITLIST.append(sr)
-            show_limbo()
+            #show_limbo()
             print("-------------------------")
 
         except prawcore.exceptions.ServerError as e:
