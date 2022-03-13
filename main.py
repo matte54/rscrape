@@ -152,13 +152,13 @@ def main():
     filterflag = False
     while run:
         try:
-            RUN = 1
+            RUN_CYCLE = 1
             CYCLE = 1
             TOTALDUPES = 0
             TOTALWRITES = 0
             #print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
-                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{RUN}')
+                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{RUN_CYCLE}')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
@@ -168,7 +168,7 @@ def main():
                     #if less then 3 writes and its not a user added subreddit: remove
                     SUBREDDITLIST.remove(x)
                     print(f'Removing popular subreddit {x} from rotation')
-                if WRITES < LIMBOTRESHOLD:
+                elif WRITES < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(x)
                     LIMBO[x] = LIMBOCYCLES # Add the subreddit to limbo for some cycles
                     print(f'Adding "{x}" to limbo (threshold {LIMBOTRESHOLD})')
@@ -210,7 +210,7 @@ def main():
                     del LIMBO[sr]
                     SUBREDDITLIST.append(sr)
             #show_limbo()
-            RUN += 1
+            RUN_CYCLE += 1
             print("-------------------------")
 
         except prawcore.exceptions.ServerError as e:
