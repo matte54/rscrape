@@ -15,9 +15,10 @@ GET_NUM_COM = 40 #amount of comments to grab per cycle DEFAULT 30
 ADD_POP_REDDITS = 10 #amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25 #seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 5 #amount of cycles to leave out limbo subreddits. DEFAULT 2
-LIMBOTRESHOLD = 3 #Minimum amount of entries found to put subreddit in limbo DEFAULT 3
+LIMBOTRESHOLD = 10 #Minimum amount of entries found to put subreddit in limbo DEFAULT 3
 #
 SUBREDDITLIST = []
+OG_SUBREDDITLIST = []
 SAVEDIDS = []
 LIMBO = {} # changed to dictionary
 run = True
@@ -27,6 +28,8 @@ with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     for line in lines:
         fixedline = line.strip("\n")
         SUBREDDITLIST.append(fixedline.lower())
+        OG_SUBREDDITLIST.append(fixedline.lower())
+
 
 reddit = praw.Reddit(client_id = CLIENTID, \
                      client_secret = CLIENTSECRET, \
@@ -160,6 +163,10 @@ def main():
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
+                if WRITES == 0 and x not in OG_SUBREDDITLIST:
+                    #if no writes and its not a user added subreddit: remove
+                    SUBREDDITLIST.remove(x)
+                    print(f'Removing popular subreddit {x} from rotation')
                 if WRITES < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(x)
                     LIMBO[x] = LIMBOCYCLES # Add the subreddit to limbo for some cycles
