@@ -19,6 +19,7 @@ LIMBOTRESHOLD = 10 #Minimum amount of entries found to put subreddit in limbo DE
 #
 SUBREDDITLIST = []
 OG_SUBREDDITLIST = []
+REMOVEDSRS = []
 SAVEDIDS = []
 LIMBO = {} # changed to dictionary
 run = True
@@ -47,7 +48,7 @@ def getPopreddits():
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
         sr = str(sr).lower()
-        if sr not in SUBREDDITLIST and sr not in LIMBO:
+        if sr not in SUBREDDITLIST and sr not in LIMBO and sr not in REMOVEDSRS:
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
             if len(srlist) > ADD_POP_REDDITS:
@@ -157,6 +158,7 @@ def main():
             TOTALDUPES = 0
             TOTALWRITES = 0
             #print(f'Subreddits in limbo for this run: {LIMBO}')
+            print(f'-----STARTING CYCLE {RUNCYCLE}----')
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{RUN_CYCLE}')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
@@ -166,6 +168,7 @@ def main():
                 TOTALWRITES += WRITES
                 if WRITES < 3 and x not in OG_SUBREDDITLIST:
                     #if less then 3 writes and its not a user added subreddit: remove
+                    REMOVEDSRS.append(x)
                     SUBREDDITLIST.remove(x)
                     print(f'Removing popular subreddit {x} from rotation')
                 elif WRITES < LIMBOTRESHOLD:
@@ -179,12 +182,13 @@ def main():
                 time.sleep(APITIME)
                 CYCLE += 1
                 print("-------------------------")
-            if TOTALWRITES < 100:
-                SAVEDIDS.clear()
-                SUBREDDITLIST.clear()
-                srs = getPopreddits()
+            #disabled for now.
+            #if TOTALWRITES < 100:
+            #    SAVEDIDS.clear()
+            #    SUBREDDITLIST.clear()
+            #    srs = getPopreddits()
                 #if this low find rate clear all lists and repopulate.
-            if TOTALDUPES > TOTALWRITES and filterflag == False:
+            if TOTALWRITES < 100 and filterflag == False:
                 print(f'Switching to NEW for one cycle...')
                 filterflag = True
                 #change to new for one cycle
