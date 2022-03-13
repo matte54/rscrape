@@ -157,7 +157,7 @@ def main():
             TOTALWRITES = 0
             #print(f'Subreddits in limbo for this run: {LIMBO}')
             for x in SUBREDDITLIST:
-                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, {len(LIMBO)} in limbo')
+                print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{CYCLE}')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
