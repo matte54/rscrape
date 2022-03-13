@@ -158,7 +158,7 @@ def main():
             TOTALDUPES = 0
             TOTALWRITES = 0
             #print(f'Subreddits in limbo for this run: {LIMBO}')
-            print(f'-----STARTING CYCLE {RUNCYCLE}----')
+            print(f'-----STARTING CYCLE {RUN_CYCLE}----')
             for x in SUBREDDITLIST:
                 print(f'Using entry {CYCLE}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{RUN_CYCLE}')
                 idlist = getComments(x, GET_NUM_COM, filterflag)
