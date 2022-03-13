@@ -163,8 +163,8 @@ def main():
                 filename, DUPES, WRITES = writeData(convolist)
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
-                if WRITES == 0 and x not in OG_SUBREDDITLIST:
-                    #if no writes and its not a user added subreddit: remove
+                if WRITES < 3 and x not in OG_SUBREDDITLIST:
+                    #if less then 3 writes and its not a user added subreddit: remove
                     SUBREDDITLIST.remove(x)
                     print(f'Removing popular subreddit {x} from rotation')
                 if WRITES < LIMBOTRESHOLD:
@@ -183,7 +183,7 @@ def main():
                 SUBREDDITLIST.clear()
                 srs = getPopreddits()
                 #if this low find rate clear all lists and repopulate.
-            if TOTALDUPES > (TOTALWRITES * 2) and filterflag == False:
+            if TOTALDUPES > TOTALWRITES and filterflag == False:
                 print(f'Switching to NEW for one cycle...')
                 filterflag = True
                 #change to new for one cycle
