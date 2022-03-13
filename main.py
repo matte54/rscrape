@@ -150,9 +150,9 @@ def show_limbo():
 
 def main():
     filterflag = False
+    RUN_CYCLE = 1
     while run:
         try:
-            RUN_CYCLE = 1
             CYCLE = 1
             TOTALDUPES = 0
             TOTALWRITES = 0
