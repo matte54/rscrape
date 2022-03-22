@@ -4,6 +4,7 @@ import sys
 import datetime, time
 import random
 import os
+import json
 from humanize import naturalsize
 from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 
@@ -30,6 +31,13 @@ with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
         fixedline = line.strip("\n")
         SUBREDDITLIST.append(fixedline.lower())
         OG_SUBREDDITLIST.append(fixedline.lower())
+
+#load stats file
+try:
+    with open("./stats/stats.json", "r") as f:
+        statsdata = json.load(f)
+except FileNotFoundError:
+    return(f'{filePath} not found...')
 
 
 reddit = praw.Reddit(client_id = CLIENTID, \
@@ -149,6 +157,17 @@ def show_limbo():
     else:
         print('Nothing to see here...')
 
+def writeJSON(filePath, data):
+    with open(filePath, "w") as f:
+        json.dump(data, f, indent=4)
+        f.close()
+#stats collection for finetuning.
+def collect_stats(data ,subreddit, writes):
+    if subreddit in data:
+        data[subreddit] += writes
+    else:
+        data[subreddit] = writes
+
 def main():
     filterflag = False
     RUN_CYCLE = 1
@@ -164,6 +183,7 @@ def main():
                 idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
+                collect_stats(statsdata, x, WRITES) #stats collection
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
                 if WRITES < 3 and x not in OG_SUBREDDITLIST:
@@ -197,6 +217,7 @@ def main():
             #print(f'DUPES/WRITES WAS {TOTALDUPES}/{TOTALWRITES}')
             SAVEDIDS.clear()
             srs = getPopreddits()
+            writeJSON("./stats/stats.json", data) #write stats to json file
             print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
             for y in srs:
                 print(y)
