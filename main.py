@@ -217,7 +217,7 @@ def main():
             #print(f'DUPES/WRITES WAS {TOTALDUPES}/{TOTALWRITES}')
             SAVEDIDS.clear()
             srs = getPopreddits()
-            writeJSON("./stats/stats.json", data) #write stats to json file
+            writeJSON("./stats/stats.json", statsdata) #write stats to json file
             print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
             for y in srs:
                 print(y)
