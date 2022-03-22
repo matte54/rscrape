@@ -37,7 +37,7 @@ try:
     with open("./stats/stats.json", "r") as f:
         statsdata = json.load(f)
 except FileNotFoundError:
-    return(f'{filePath} not found...')
+    print(f'{filePath} not found...')
 
 
 reddit = praw.Reddit(client_id = CLIENTID, \
