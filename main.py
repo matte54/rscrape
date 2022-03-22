@@ -22,15 +22,26 @@ SUBREDDITLIST = []
 OG_SUBREDDITLIST = []
 REMOVEDSRS = []
 SAVEDIDS = []
+IGNORELIST = []
 LIMBO = {} # changed to dictionary
 run = True
 
+#load subreddits
 with open("./data/subreddits.txt", 'r', encoding='utf8') as f:
     lines = f.readlines()
     for line in lines:
         fixedline = line.strip("\n")
         SUBREDDITLIST.append(fixedline.lower())
         OG_SUBREDDITLIST.append(fixedline.lower())
+f.close()
+
+#load ignorelist
+with open("./data/ignorelist.txt", 'r', encoding='utf8') as igf:
+    iglines = igf.readlines()
+    for igline in iglines:
+        igfixedline = igline.strip("\n")
+        IGNORELIST.append(fixedline.lower())
+igf.close()
 
 #load stats file
 try:
@@ -38,6 +49,7 @@ try:
         statsdata = json.load(f)
 except FileNotFoundError:
     print(f'{filePath} not found...')
+f.close()
 
 
 reddit = praw.Reddit(client_id = CLIENTID, \
@@ -56,6 +68,8 @@ def getPopreddits():
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
         sr = str(sr).lower()
+        if sr in IGNORELIST:
+            continue
         if sr not in SUBREDDITLIST and sr not in LIMBO and sr not in REMOVEDSRS:
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
