@@ -186,11 +186,11 @@ def collect_stats(data ,subreddit, writes, dupes):
             data["default"][subreddit]["writes"] += writes
             data["default"][subreddit]["dupes"] += dupes
         else:
-            if writes == 0:
-                data["default"][subreddit]["last_change"] = "0000-00-00" #this is to make sure the key atleast gets entered.
             data["default"][subreddit] = {}
             data["default"][subreddit]["writes"] = writes
             data["default"][subreddit]["dupes"] = dupes
+            if writes == 0:
+                data["default"][subreddit]["last_change"] = "0000-00-00" #this is to make sure the key atleast gets entered.
         if writes > 0:
             date_only = str(datetime.datetime.now().date())
             data["default"][subreddit]["last_change"] = date_only
@@ -200,11 +200,11 @@ def collect_stats(data ,subreddit, writes, dupes):
             data["popular"][subreddit]["writes"] += writes
             data["popular"][subreddit]["dupes"] += dupes
         else:
-            if writes == 0:
-                data["popular"][subreddit]["last_change"] = "0000-00-00"
             data["popular"][subreddit] = {}
             data["popular"][subreddit]["writes"] = writes
             data["popular"][subreddit]["dupes"] = dupes
+            if writes == 0:
+                data["popular"][subreddit]["last_change"] = "0000-00-00"
         if writes > 0:
             date_only = str(datetime.datetime.now().date())
             data["popular"][subreddit]["last_change"] = date_only
