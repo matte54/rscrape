@@ -174,7 +174,7 @@ def show_limbo():
         print('Nothing to see here...')
 
 def writeJSON(filePath, data):
-    print(f'Saving stats to {filePath}'!)
+    print(f'Saving stats to {filePath}!')
     with open(filePath, "w") as f:
         json.dump(data, f, indent=4)
         f.close()
