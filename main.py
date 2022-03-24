@@ -174,16 +174,20 @@ def show_limbo():
         print('Nothing to see here...')
 
 def writeJSON(filePath, data):
+    print(f'Saving stats to {filePath}'!)
     with open(filePath, "w") as f:
         json.dump(data, f, indent=4)
         f.close()
 #stats collection for finetuning.
 def collect_stats(data ,subreddit, writes, dupes):
     if subreddit in OG_SUBREDDITLIST:
+        #for the default subreddits
         if subreddit in data["default"]:
             data["default"][subreddit]["writes"] += writes
             data["default"][subreddit]["dupes"] += dupes
         else:
+            if writes == 0:
+                data["default"][subreddit]["last_change"] = "0000-00-00" #this is to make sure the key atleast gets entered.
             data["default"][subreddit] = {}
             data["default"][subreddit]["writes"] = writes
             data["default"][subreddit]["dupes"] = dupes
@@ -191,10 +195,13 @@ def collect_stats(data ,subreddit, writes, dupes):
             date_only = str(datetime.datetime.now().date())
             data["default"][subreddit]["last_change"] = date_only
     else:
+        #for added popular subreddits
         if subreddit in data["popular"]:
             data["popular"][subreddit]["writes"] += writes
             data["popular"][subreddit]["dupes"] += dupes
         else:
+            if writes == 0:
+                data["popular"][subreddit]["last_change"] = "0000-00-00"
             data["popular"][subreddit] = {}
             data["popular"][subreddit]["writes"] = writes
             data["popular"][subreddit]["dupes"] = dupes
