@@ -67,6 +67,8 @@ def getPopreddits():
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
+        if sr.over18 == True:
+            continue
         sr = str(sr).lower()
         if sr in IGNORELIST:
             continue
