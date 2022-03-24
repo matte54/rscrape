@@ -45,7 +45,7 @@ igf.close()
 
 #load stats file
 try:
-    with open("./stats/stats.json", "r") as f:
+    with open("./stats/advstats.json", "r") as f:
         statsdata = json.load(f)
 except FileNotFoundError:
     print(f'{filePath} not found...')
@@ -178,11 +178,29 @@ def writeJSON(filePath, data):
         json.dump(data, f, indent=4)
         f.close()
 #stats collection for finetuning.
-def collect_stats(data ,subreddit, writes):
-    if subreddit in data:
-        data[subreddit] += writes
+def collect_stats(data ,subreddit, writes, dupes):
+    if subreddit in OG_SUBREDDITLIST:
+        if subreddit in data["default"]:
+            data["default"][subreddit]["writes"] += writes
+            data["default"][subreddit]["dupes"] += dupes
+        else:
+            data["default"][subreddit] = {}
+            data["default"][subreddit]["writes"] = writes
+            data["default"][subreddit]["dupes"] = dupes
+        if writes > 0:
+            date_only = str(datetime.datetime.now().date())
+            data["default"][subreddit]["last_change"] = date_only
     else:
-        data[subreddit] = writes
+        if subreddit in data["popular"]:
+            data["popular"][subreddit]["writes"] += writes
+            data["popular"][subreddit]["dupes"] += dupes
+        else:
+            data["popular"][subreddit] = {}
+            data["popular"][subreddit]["writes"] = writes
+            data["popular"][subreddit]["dupes"] = dupes
+        if writes > 0:
+            date_only = str(datetime.datetime.now().date())
+            data["popular"][subreddit]["last_change"] = date_only
 
 def main():
     filterflag = False
@@ -199,7 +217,7 @@ def main():
                 idlist = getComments(x, GET_NUM_COM, filterflag)
                 convolist = getStatementAndAnswer(idlist)
                 filename, DUPES, WRITES = writeData(convolist)
-                collect_stats(statsdata, x, WRITES) #stats collection
+                collect_stats(statsdata, x, WRITES, DUPES) #stats collection
                 TOTALDUPES += DUPES
                 TOTALWRITES += WRITES
                 if WRITES < 3 and x not in OG_SUBREDDITLIST:
@@ -233,7 +251,7 @@ def main():
             #print(f'DUPES/WRITES WAS {TOTALDUPES}/{TOTALWRITES}')
             SAVEDIDS.clear()
             srs = getPopreddits()
-            writeJSON("./stats/stats.json", statsdata) #write stats to json file
+            writeJSON("./stats/advstats.json", statsdata) #write stats to json file
             print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
             for y in srs:
                 print(y)

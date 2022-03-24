@@ -6,3 +6,4 @@ venv/
 credentials.py
 test.py
 notes.txt
+test.json
