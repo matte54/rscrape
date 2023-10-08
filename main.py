@@ -15,7 +15,7 @@ import requests
 from credentials import CLIENTID, CLIENTSECRET, USERAGENT, USERNAME, PASSWORD
 
 ####VARIABLES TO TWEAK####
-POSTLENGTH = 100  # accepted char length of posts. DEFAULT 100
+POSTLENGTH = 120  # accepted char length of posts. DEFAULT 100
 UPVOTES = 1  # least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3  # least comments to consider post DEFAULT 3
 GET_NUM_COM = 40  # amount of comments to grab per cycle DEFAULT 30
@@ -256,15 +256,16 @@ def main():
             totalwrites = 0
             print(f'Subreddits in limbo for this run: {LIMBO}')
             print(f'-----STARTING CYCLE {run_cycle}----')
-            for current_subreddit in SUBREDDITLIST:
-                print(f'Using entry {cycle}/{len(SUBREDDITLIST)}, limbo:{len(LIMBO)} cycle:{run_cycle}')
+            tmp_subredditlist = SUBREDDITLIST
+            for current_subreddit in tmp_subredditlist:
+                print(f'Using entry {cycle}/{len(tmp_subredditlist)}, limbo:{len(LIMBO)} cycle:{run_cycle}')
                 idlist = getcomments(current_subreddit, GET_NUM_COM, filterflag)
                 convolist = get_statement_and_answer(idlist)
                 filename, dupes, writes = write_data(convolist)
                 collect_stats(statsdata, current_subreddit, writes, dupes)  # stats collection
                 totaldupes += dupes
                 totalwrites += writes
-                if writes < 3 and current_subreddit not in OG_SUBREDDITLIST:
+                if writes < 5 and current_subreddit not in OG_SUBREDDITLIST:
                     # if less then 3 writes and its not a user added subreddit: remove
                     REMOVEDSRS.append(current_subreddit)
                     SUBREDDITLIST.remove(current_subreddit)
