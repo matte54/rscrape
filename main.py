@@ -23,6 +23,7 @@ ADD_POP_REDDITS = 30  # amount of popular reddits to add after first cycle DEFAU
 APITIME = 25  # seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 6  # amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 15  # Minimum amount of entries found to put subreddit in limbo DEFAULT 10
+SUBREDDIT_MAX_LIMIT = 50
 #
 SUBREDDITLIST = []
 OG_SUBREDDITLIST = []
@@ -69,6 +70,10 @@ def getpopreddits():
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
+        if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
+            # try to keep the list around the limit
+            print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
+            return srlist
         if sr.over18:
             continue
         sr = str(sr).lower()
