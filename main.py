@@ -273,9 +273,9 @@ def main():
                 elif writes < LIMBOTRESHOLD:
                     SUBREDDITLIST.remove(current_subreddit)
                     LIMBO[current_subreddit] = LIMBOCYCLES  # Add the subreddit to limbo for some cycles
-                    print(f'Adding "{current_subreddit}" to limbo (threshold {LIMBOTRESHOLD})')
+                    print(f'Adding "{current_subreddit}" to limbo (writes < {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
-                print(f'Writes: {totalwrites} - {filename[7:]} now {humanize.naturalsize(filesize)}')
+                print(f'{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
                 #print(f'API Friendly wait...{APITIME}s')
                 time.sleep(APITIME)
                 cycle += 1
