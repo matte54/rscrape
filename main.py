@@ -45,7 +45,7 @@ with open("./data/ignorelist.txt", 'r', encoding='utf8') as igf:
     iglines = igf.readlines()
     for igline in iglines:
         igfixedline = igline.strip("\n")
-        IGNORELIST.append(fixedline.lower())
+        IGNORELIST.append(igfixedline.lower())
 
 # load stats file
 try:
@@ -65,7 +65,7 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
-
+print(IGNORELIST)
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
