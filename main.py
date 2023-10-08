@@ -122,8 +122,7 @@ def get_statement_and_answer(idlist):
                     if replies[0].score >= UPVOTES and len(replies[0].body) < POSTLENGTH:
                         answer = replies[0].body
             if answer != "":
-                dirtydata = f"{statement} / {answer}"
-                cleandata = cleanup(dirtydata)
+                cleandata = cleanup(statement, answer)
                 if cleandata != "":
                     convos.append(cleandata)
                 else:
@@ -162,19 +161,39 @@ def write_data(data):
 badwords = ["[removed]", "r/", "/r/", "edit:", "/u/", "u/", "\n", "[deleted]", "![", "http"]
 
 
-def cleanup(string):
-    no = re.search(r'^(http|<?https?:\S+)|^\s|^\W|^\d+$|^\d|^\s*$', string)
+def cleanup(s, a):
+    pattern = r'^(http|<?https?:\S+)|^\s|^\s*$'
+
+    # first check statment
+    no = re.search(pattern, s)
     if no:
-        #print(f'{string} DENIED BY CLEANUP! (REGEX)')
-        return ""
-    if " / " not in string:
-        #print(f'{string} DENIED BY CLEANUP! (NO DASH)')
+        #print(f'{s} DENIED BY CLEANUP! (REGEX)')
         return ""
     for i in badwords:
-        if i in string:
-            #print(f'{string} DENIED BY CLEANUP!(BAD WORD {i})')
+        if i in s:
+            #print(f'{s} DENIED BY CLEANUP!(BAD WORD {i})')
             return ""
-    return string
+    # then check answer
+    no = re.search(pattern, a)
+    if no:
+        #print(f'{a} DENIED BY CLEANUP! (REGEX)')
+        return ""
+    for i in badwords:
+        if i in a:
+            #print(f'{a} DENIED BY CLEANUP!(BAD WORD {i})')
+            return ""
+
+    # then put the string together
+    string_data = f"{s} / {a}"
+
+    if " / " not in string_data:
+        #print(f'{string_data} DENIED BY CLEANUP! (NO DASH)')
+        return ""
+    if string_data.count(" / ") > 1:
+        #print(f'{string_data} DENIED BY CLEANUP! (MULIPLE SPLITS)')
+        return ""
+
+    return string_data
 
 
 # show whats in limbo for debug
