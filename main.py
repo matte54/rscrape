@@ -19,10 +19,10 @@ POSTLENGTH = 120  # accepted char length of posts. DEFAULT 100
 UPVOTES = 1  # least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3  # least comments to consider post DEFAULT 3
 GET_NUM_COM = 40  # amount of comments to grab per cycle DEFAULT 30
-ADD_POP_REDDITS = 10  # amount of popular reddits to add after first cycle DEFAULT 10
+ADD_POP_REDDITS = 20  # amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25  # seconds to wait between calls DEFAULT 30
-LIMBOCYCLES = 5  # amount of cycles to leave out limbo subreddits. DEFAULT 2
-LIMBOTRESHOLD = 10  # Minimum amount of entries found to put subreddit in limbo DEFAULT 3
+LIMBOCYCLES = 6  # amount of cycles to leave out limbo subreddits. DEFAULT 2
+LIMBOTRESHOLD = 15  # Minimum amount of entries found to put subreddit in limbo DEFAULT 10
 #
 SUBREDDITLIST = []
 OG_SUBREDDITLIST = []
@@ -254,7 +254,7 @@ def main():
             cycle = 1
             totaldupes = 0
             totalwrites = 0
-            print(f'Subreddits in limbo for this run: {LIMBO}')
+            #print(f'Subreddits in limbo for this run: {LIMBO}')
             print(f'----- STARTING CYCLE {run_cycle} ----')
             tmp_subredditlist = SUBREDDITLIST[:]
             for current_subreddit in tmp_subredditlist:
@@ -297,8 +297,10 @@ def main():
             srs = getpopreddits()
             write_json("./stats/advstats.json", statsdata)  # write stats to json file
             print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
+            new_popularsubreddits_str = ""
             for y in srs:
-                print(y)
+                new_popularsubreddits_str += f'{y}, '
+            print(new_popularsubreddits_str)
             print("-------------------------")
 
             # if there's anything in limbo decrement its time by one
