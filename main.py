@@ -65,7 +65,6 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
-print(IGNORELIST)
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
