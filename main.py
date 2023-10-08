@@ -255,8 +255,8 @@ def main():
             totaldupes = 0
             totalwrites = 0
             print(f'Subreddits in limbo for this run: {LIMBO}')
-            print(f'-----STARTING CYCLE {run_cycle}----')
-            tmp_subredditlist = SUBREDDITLIST
+            print(f'----- STARTING CYCLE {run_cycle} ----')
+            tmp_subredditlist = SUBREDDITLIST[:]
             for current_subreddit in tmp_subredditlist:
                 print(f'Using entry {cycle}/{len(tmp_subredditlist)}, limbo:{len(LIMBO)} cycle:{run_cycle}')
                 idlist = getcomments(current_subreddit, GET_NUM_COM, filterflag)
