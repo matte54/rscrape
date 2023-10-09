@@ -19,7 +19,7 @@ POSTLENGTH = 120  # accepted char length of posts. DEFAULT 100
 UPVOTES = 1  # least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3  # least comments to consider post DEFAULT 3
 GET_NUM_COM = 40  # amount of comments to grab per cycle DEFAULT 30
-ADD_POP_REDDITS = 30  # amount of popular reddits to add after first cycle DEFAULT 10
+ADD_POP_REDDITS = 25  # amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25  # seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 6  # amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 15  # Minimum amount of entries found to put subreddit in limbo DEFAULT 10
@@ -66,14 +66,11 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
+
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
     for sr in xr.popular(limit=250):
-        if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
-            # try to keep the list around the limit
-            print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
-            return srlist
         if sr.over18:
             continue
         sr = str(sr).lower()
@@ -84,6 +81,10 @@ def getpopreddits():
             srlist.append(str(sr).lower())
             if len(srlist) > ADD_POP_REDDITS:
                 break
+        if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
+            # try to keep the list around the limit
+            print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
+            return srlist
     random.shuffle(SUBREDDITLIST)
     return srlist
 
@@ -274,7 +275,7 @@ def main():
                     REMOVEDSRS.append(current_subreddit)
                     SUBREDDITLIST.remove(current_subreddit)
                     print(f'Removing popular subreddit {current_subreddit} from rotation')
-                elif writes < LIMBOTRESHOLD:
+                elif writes < LIMBOTRESHOLD and current_subreddit in OG_SUBREDDITLIST:
                     SUBREDDITLIST.remove(current_subreddit)
                     LIMBO[current_subreddit] = LIMBOCYCLES  # Add the subreddit to limbo for some cycles
                     print(f'Adding "{current_subreddit}" to limbo (writes < {LIMBOTRESHOLD})')
@@ -314,10 +315,13 @@ def main():
                 # get any subreddit that has 0 cycles left in limbo
                 remove = [sr for sr in LIMBO if LIMBO[sr] < 1]
                 # remove the subreddit from limbo and add it back into the subreddit list
+                remove_str = ""
                 for sr in remove:
-                    print(f'Taking "{sr}" out of limbo...')
+                    remove_str += f'{sr}, '
                     del LIMBO[sr]
                     SUBREDDITLIST.append(sr)
+                if remove:
+                    print(f'Taking the following subreddits out of limbo\n {remove_str}')
             # show_limbo()
             run_cycle += 1
             print("-------------------------")
