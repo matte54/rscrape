@@ -84,7 +84,7 @@ def getpopreddits():
         if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
             # try to keep the list around the limit
             print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
-            return srlist
+            break
     random.shuffle(SUBREDDITLIST)
     return srlist
 
