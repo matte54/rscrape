@@ -70,6 +70,7 @@ else:
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
+    pop_reddit_amount = 0
     for sr in xr.popular(limit=250):
         if sr.over18:
             continue
@@ -79,6 +80,7 @@ def getpopreddits():
         if sr not in SUBREDDITLIST and sr not in LIMBO and sr not in REMOVEDSRS:
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
+            pop_reddit_amount += 1
             if len(srlist) > ADD_POP_REDDITS:
                 break
         if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
@@ -86,6 +88,7 @@ def getpopreddits():
             print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
             break
     random.shuffle(SUBREDDITLIST)
+    print(f'Adding {pop_reddit_amount} popular subreddits')
     return srlist
 
 
@@ -98,11 +101,10 @@ def getcomments(subreddit, amount, filterset=False):
     else:
         use_filter = subreddit.hot
         flag = "hot"
-    print(f'Accessing {subreddit}({flag}) subreddit...')
+    print(f'Accessing r/{subreddit} ({flag})')
     for post in use_filter(limit=amount):
-        if post.stickied == False and post.over_18 == False and post.score >= UPVOTES and post.num_comments > COMMENT_NUM:
+        if not post.stickied and not post.over_18 and post.score >= UPVOTES and post.num_comments > COMMENT_NUM:
             local_id = post.id
-            comment = post.comments
             if post.comments and local_id not in SAVEDIDS:
                 idlist.append(local_id)
                 SAVEDIDS.append(local_id)
@@ -119,7 +121,7 @@ def get_statement_and_answer(idlist):
         for comment in post.comments:
             answer = ""
             statement = ""
-            if comment.stickied == False and comment.score >= UPVOTES and len(comment.body) < POSTLENGTH:
+            if not comment.stickied and comment.score >= UPVOTES and len(comment.body) < POSTLENGTH:
                 statement = comment.body
                 replies = comment.replies
                 replies.comment_sort = "best"
@@ -133,7 +135,7 @@ def get_statement_and_answer(idlist):
                 else:
                     denied += 1
     if denied > 0:
-        print(f'{denied} lines IGNORED by cleaning.')
+        print(f'{denied} filtered (IGNORED))')
         pass
     return convos
 
@@ -213,8 +215,8 @@ def show_limbo():
 
 def write_json(file_path, data):
     print(f'Saving stats to {file_path}!')
-    with open(file_path, "w") as f:
-        json.dump(data, f, indent=4)
+    with open(file_path, "w") as file:
+        json.dump(data, file, indent=4)
 
 
 # stats collection for finetuning.
@@ -263,7 +265,7 @@ def main():
             print(f'----- STARTING CYCLE {run_cycle} ----')
             tmp_subredditlist = SUBREDDITLIST[:]
             for current_subreddit in tmp_subredditlist:
-                print(f'Using entry {cycle}/{len(tmp_subredditlist)}, limbo:{len(LIMBO)} cycle:{run_cycle}')
+                print(f'- {cycle}/{len(tmp_subredditlist)} limbo: {len(LIMBO)} cycle: {run_cycle} -')
                 idlist = getcomments(current_subreddit, GET_NUM_COM, filterflag)
                 convolist = get_statement_and_answer(idlist)
                 filename, dupes, writes = write_data(convolist)
@@ -274,15 +276,13 @@ def main():
                     # if less then 3 writes and its not a user added subreddit: remove
                     REMOVEDSRS.append(current_subreddit)
                     SUBREDDITLIST.remove(current_subreddit)
-                    print(f'Removing popular subreddit {current_subreddit} from rotation')
+                    print(f'Removing {current_subreddit} from rotation')
                 elif writes < LIMBOTRESHOLD and current_subreddit in OG_SUBREDDITLIST:
                     SUBREDDITLIST.remove(current_subreddit)
                     LIMBO[current_subreddit] = LIMBOCYCLES  # Add the subreddit to limbo for some cycles
                     print(f'Adding "{current_subreddit}" to limbo (writes < {LIMBOTRESHOLD})')
                 filesize = os.stat(filename).st_size
-                print(f'{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
-                #print(f'API Friendly wait...{APITIME}s')
-                time.sleep(APITIME)
+                print(f'r/{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
                 cycle += 1
                 print("-------------------------")
             # disabled for now.
@@ -291,7 +291,7 @@ def main():
             #    SUBREDDITLIST.clear()
             #    srs = getPopreddits()
             # if this low find rate clear all lists and repopulate.
-            if totalwrites < 100 and filterflag == False:
+            if totaldupes > 3000 and not filterflag:
                 print(f'Switching to NEW for one cycle...')
                 filterflag = True
                 # change to new for one cycle
@@ -301,7 +301,6 @@ def main():
             SAVEDIDS.clear()
             srs = getpopreddits()
             write_json("./stats/advstats.json", statsdata)  # write stats to json file
-            print(f'Adding {ADD_POP_REDDITS} popular subreddits...')
             new_popularsubreddits_str = ""
             for y in srs:
                 new_popularsubreddits_str += f'{y}, '
@@ -338,7 +337,7 @@ def main():
             print(e)
             time.sleep(60)
             print('Error, Retrying...')
-        except prawcore.exceptions.Forbidden as e:
+        except prawcore.exceptions.Forbidden:
             print(f'403 Forbidden, removing subreddit "{current_subreddit}" from rotation.')
             SUBREDDITLIST.remove(current_subreddit)
             time.sleep(60)
