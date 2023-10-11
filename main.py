@@ -19,7 +19,7 @@ POSTLENGTH = 120  # accepted char length of posts. DEFAULT 100
 UPVOTES = 1  # least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3  # least comments to consider post DEFAULT 3
 GET_NUM_COM = 40  # amount of comments to grab per cycle DEFAULT 30
-APITIME = 25  # seconds to wait between calls DEFAULT 30
+APITIME = 20  # seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 6  # amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 15  # Minimum amount of entries found to put subreddit in limbo DEFAULT 10
 SUBREDDIT_MAX_LIMIT = 50
@@ -280,7 +280,6 @@ def main():
                 filesize = os.stat(filename).st_size
                 print(f'r/{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
                 cycle += 1
-                time.sleep(25)
                 print("-------------------------")
             # disabled for now.
             # if TOTALWRITES < 100:
@@ -341,6 +340,10 @@ def main():
             print(e)
             time.sleep(60)
             print('Error, Retrying...')
+        except prawcore.exceptions.TooManyRequests as e:
+            print(e)
+            time.sleep(60)
+            print('API time+, Retrying...')
         except prawcore.exceptions.Forbidden:
             print(f'403 Forbidden, removing subreddit "{current_subreddit}" from rotation.')
             SUBREDDITLIST.remove(current_subreddit)
