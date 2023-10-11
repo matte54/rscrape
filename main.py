@@ -280,6 +280,7 @@ def main():
                 filesize = os.stat(filename).st_size
                 print(f'r/{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
                 cycle += 1
+                time.sleep(25)
                 print("-------------------------")
             # disabled for now.
             # if TOTALWRITES < 100:
