@@ -19,7 +19,6 @@ POSTLENGTH = 120  # accepted char length of posts. DEFAULT 100
 UPVOTES = 1  # least number of upvotes needed DEFAULT 1
 COMMENT_NUM = 3  # least comments to consider post DEFAULT 3
 GET_NUM_COM = 40  # amount of comments to grab per cycle DEFAULT 30
-ADD_POP_REDDITS = 25  # amount of popular reddits to add after first cycle DEFAULT 10
 APITIME = 25  # seconds to wait between calls DEFAULT 30
 LIMBOCYCLES = 6  # amount of cycles to leave out limbo subreddits. DEFAULT 2
 LIMBOTRESHOLD = 15  # Minimum amount of entries found to put subreddit in limbo DEFAULT 10
@@ -81,8 +80,6 @@ def getpopreddits():
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
             pop_reddit_amount += 1
-            if len(srlist) > ADD_POP_REDDITS:
-                break
         if len(SUBREDDITLIST) >= SUBREDDIT_MAX_LIMIT:
             # try to keep the list around the limit
             print(f'Subredditlist is at {len(SUBREDDITLIST)}/{SUBREDDIT_MAX_LIMIT}')
@@ -214,7 +211,6 @@ def show_limbo():
 
 
 def write_json(file_path, data):
-    print(f'Saving stats to {file_path}!')
     with open(file_path, "w") as file:
         json.dump(data, file, indent=4)
 
@@ -291,19 +287,26 @@ def main():
             #    SUBREDDITLIST.clear()
             #    srs = getPopreddits()
             # if this low find rate clear all lists and repopulate.
-            if totaldupes > 3000 and not filterflag:
-                print(f'Switching to NEW for one cycle...')
+            if totalwrites < 150 and not filterflag:
+                print(f'Switching to NEW')
                 filterflag = True
                 # change to new for one cycle
             else:
+                if filterflag:
+                    print(f'Switching back to HOT')
                 filterflag = False
             print(f'DUPES/WRITES WAS {totaldupes}/{totalwrites}')
             SAVEDIDS.clear()
             srs = getpopreddits()
             write_json("./stats/advstats.json", statsdata)  # write stats to json file
             new_popularsubreddits_str = ""
+            sub_lines = 0
             for y in srs:
+                sub_lines += 1
                 new_popularsubreddits_str += f'{y}, '
+                if sub_lines == 5:
+                    new_popularsubreddits_str += f'\n'
+                    sub_lines = 0
             print(new_popularsubreddits_str)
             print("-------------------------")
 
