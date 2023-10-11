@@ -70,7 +70,7 @@ def getpopreddits():
     srlist = []
     xr = reddit.subreddits
     pop_reddit_amount = 0
-    for sr in xr.popular(limit=250):
+    for sr in xr.popular(limit=350):
         if sr.over18:
             continue
         sr = str(sr).lower()
