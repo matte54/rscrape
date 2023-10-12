@@ -69,7 +69,7 @@ def getpopreddits():
     srlist = []
     xr = reddit.subreddits
     pop_reddit_amount = 0
-    for sr in xr.popular(limit=350):
+    for sr in xr.popular(limit=500):
         if sr.over18:
             continue
         sr = str(sr).lower()
@@ -226,6 +226,7 @@ def daily_report():
                           f' - WRITES: {daily_stats_dict["popular"][subreddit_report]["writes"]}\n')
             report_file.write(reportline)
     daily_stats_dict["popular"] = {}
+    daily_stats_dict["default"] = {}  # remove this later
     write_json("./stats/advstats.json", daily_stats_dict)
 
 
