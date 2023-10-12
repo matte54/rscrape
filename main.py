@@ -287,7 +287,7 @@ def main():
             #    SUBREDDITLIST.clear()
             #    srs = getPopreddits()
             # if this low find rate clear all lists and repopulate.
-            if totalwrites < 150 and not filterflag:
+            if totaldupes / totalwrites > 2.5 and not filterflag:
                 print(f'Switching to NEW')
                 filterflag = True
                 # change to new for one cycle
