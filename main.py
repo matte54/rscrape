@@ -216,11 +216,11 @@ def write_json(file_path, data):
 
 def daily_report():
     now = datetime.datetime.now()
-    formatted_date = now.strftime("%Y_%m_%d")
+    formatted_date = now.strftime("%Y %m %d")
     print(f"Writing report for {formatted_date}")
     with open("./stats/advstats.json", "r") as f:
         daily_stats_dict = json.load(f)
-    with open(f'./report/report_{formatted_date}.log', 'w', encoding='utf8') as report_file:
+    with open(f'./report/report.log', 'w', encoding='utf8') as report_file:
         for subreddit_report in daily_stats_dict["popular"].keys():
             reportline = (f'{subreddit_report} - DUPES: {daily_stats_dict["popular"][subreddit_report]["dupes"]}'
                           f' - WRITES: {daily_stats_dict["popular"][subreddit_report]["writes"]}\n')
