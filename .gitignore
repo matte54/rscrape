@@ -1,6 +1,7 @@
 __pycache__/
 .idea/
 data/
+report/
 stats/
 venv/
 credentials.py

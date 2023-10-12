@@ -65,7 +65,6 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
-
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
@@ -215,6 +214,21 @@ def write_json(file_path, data):
         json.dump(data, file, indent=4)
 
 
+def daily_report():
+    now = datetime.datetime.now()
+    formatted_date = now.strftime("%Y_%m_%d")
+    print(f"Writing report for {formatted_date}")
+    with open("./stats/advstats.json", "r") as f:
+        daily_stats_dict = json.load(f)
+    with open(f'./report/report_{formatted_date}.log', 'w', encoding='utf8') as report_file:
+        for subreddit_report in daily_stats_dict["popular"].keys():
+            reportline = (f'{subreddit_report} - DUPES: {daily_stats_dict["popular"][subreddit_report]["dupes"]}'
+                          f' - WRITES: {daily_stats_dict["popular"][subreddit_report]["writes"]}\n')
+            report_file.write(reportline)
+    daily_stats_dict["popular"] = {}
+    write_json("./stats/advstats.json", daily_stats_dict)
+
+
 # stats collection for finetuning.
 def collect_stats(data, subreddit, writes, dupes):
     if subreddit in OG_SUBREDDITLIST:
@@ -249,6 +263,7 @@ def collect_stats(data, subreddit, writes, dupes):
 
 
 def main():
+    daily_report()
     filterflag = False
     run_cycle = 1
     while run:
@@ -356,6 +371,7 @@ def main():
             SUBREDDITLIST.remove(current_subreddit)
             time.sleep(60)
             continue
+
 
 
 if __name__ == "__main__":
