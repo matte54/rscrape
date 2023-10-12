@@ -297,17 +297,7 @@ def main():
                 filterflag = False
             print(f'DUPES/WRITES WAS {totaldupes}/{totalwrites}')
             SAVEDIDS.clear()
-            srs = getpopreddits()
             write_json("./stats/advstats.json", statsdata)  # write stats to json file
-            new_popularsubreddits_str = ""
-            sub_lines = 0
-            for y in srs:
-                sub_lines += 1
-                new_popularsubreddits_str += f'{y}, '
-                if sub_lines == 5:
-                    new_popularsubreddits_str += f'\n'
-                    sub_lines = 0
-            print(new_popularsubreddits_str)
             print("-------------------------")
 
             # if there's anything in limbo decrement its time by one
@@ -318,13 +308,30 @@ def main():
                 remove = [sr for sr in LIMBO if LIMBO[sr] < 1]
                 # remove the subreddit from limbo and add it back into the subreddit list
                 remove_str = ""
+                limbo_lines = 0
                 for sr in remove:
+                    limbo_lines += 1
                     remove_str += f'{sr}, '
                     del LIMBO[sr]
                     SUBREDDITLIST.append(sr)
+                    if limbo_lines == 5:
+                        remove_str += f'\n'
+                        limbo_lines = 0
                 if remove:
                     print(f'Taking the following subreddits out of limbo\n {remove_str}')
             # show_limbo()
+
+            # add popular subreddits
+            srs = getpopreddits()
+            new_popularsubreddits_str = ""
+            sub_lines = 0
+            for y in srs:
+                sub_lines += 1
+                new_popularsubreddits_str += f'{y}, '
+                if sub_lines == 5:
+                    new_popularsubreddits_str += f'\n'
+                    sub_lines = 0
+            print(new_popularsubreddits_str)
             run_cycle += 1
             print("-------------------------")
 
