@@ -47,12 +47,16 @@ with open("./data/ignorelist.txt", 'r', encoding='utf8') as igf:
         igfixedline = igline.strip("\n")
         IGNORELIST.append(igfixedline.lower())
 
+
 # load stats file
-try:
-    with open("./stats/advstats.json", "r") as f:
-        statsdata = json.load(f)
-except FileNotFoundError:
-    print(f'Statsfile not found...')
+def load_stats():
+    try:
+        with open("./stats/advstats.json", "r") as f:
+            statsdata = json.load(f)
+    except FileNotFoundError:
+        print(f'Statsfile not found...')
+    return statsdata
+
 
 reddit = praw.Reddit(client_id=CLIENTID,
                      client_secret=CLIENTSECRET,
@@ -75,10 +79,10 @@ def getpopreddits():
             continue
         sr = str(sr).lower()
         if sr in IGNORELIST:
-            print(f"skipping {sr}")
+            #print(f"skipping {sr}")
             continue
         if sr not in SUBREDDITLIST and sr not in LIMBO and sr not in REMOVEDSRS:
-            print(f'adding {sr}')
+            #print(f'adding {sr}')
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
             pop_reddit_amount += 1
@@ -88,7 +92,6 @@ def getpopreddits():
             break
     random.shuffle(SUBREDDITLIST)
     print(f'Adding {pop_reddit_amount} popular subreddits')
-    print(SUBREDDITLIST)
     return srlist
 
 
@@ -135,7 +138,7 @@ def get_statement_and_answer(idlist):
                 else:
                     denied += 1
     if denied > 0:
-        print(f'{denied} filtered (IGNORED))')
+        print(f'{denied} filtered (IGNORED)')
         pass
     return convos
 
@@ -280,6 +283,7 @@ def main():
             #print(f'Subreddits in limbo for this run: {LIMBO}')
             print(f'----- STARTING CYCLE {run_cycle} ----')
             tmp_subredditlist = SUBREDDITLIST[:]
+            statsdata = load_stats()
             for current_subreddit in tmp_subredditlist:
                 print(f'- {cycle}/{len(tmp_subredditlist)} limbo: {len(LIMBO)} cycle: {run_cycle} -')
                 idlist = getcomments(current_subreddit, GET_NUM_COM, filterflag)
@@ -377,7 +381,6 @@ def main():
             SUBREDDITLIST.remove(current_subreddit)
             time.sleep(60)
             continue
-
 
 
 if __name__ == "__main__":
