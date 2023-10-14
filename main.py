@@ -65,6 +65,7 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 
+
 def getpopreddits():
     srlist = []
     xr = reddit.subreddits
@@ -74,8 +75,10 @@ def getpopreddits():
             continue
         sr = str(sr).lower()
         if sr in IGNORELIST:
+            print(f"skipping {sr}")
             continue
         if sr not in SUBREDDITLIST and sr not in LIMBO and sr not in REMOVEDSRS:
+            print(f'adding {sr}')
             SUBREDDITLIST.append(str(sr).lower())
             srlist.append(str(sr).lower())
             pop_reddit_amount += 1
@@ -85,6 +88,7 @@ def getpopreddits():
             break
     random.shuffle(SUBREDDITLIST)
     print(f'Adding {pop_reddit_amount} popular subreddits')
+    print(SUBREDDITLIST)
     return srlist
 
 
@@ -296,6 +300,7 @@ def main():
                 filesize = os.stat(filename).st_size
                 print(f'r/{current_subreddit} writes: {writes} - {filename[7:]} now {humanize.naturalsize(filesize)}')
                 cycle += 1
+                time.sleep(APITIME)
                 print("-------------------------")
             # disabled for now.
             # if TOTALWRITES < 100:
