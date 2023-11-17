@@ -58,6 +58,8 @@ def load_stats():
     return statsdata
 
 
+time.sleep(10)
+
 reddit = praw.Reddit(client_id=CLIENTID,
                      client_secret=CLIENTSECRET,
                      user_agent=USERAGENT,
@@ -69,6 +71,7 @@ if reddit.user.me() == USERNAME:
 else:
     sys.exit('Authentication error')
 time.sleep(10)
+
 
 def getpopreddits():
     srlist = []
