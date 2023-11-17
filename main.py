@@ -68,7 +68,7 @@ if reddit.user.me() == USERNAME:
     print(f"Successfully logged in as {USERNAME}!")
 else:
     sys.exit('Authentication error')
-
+time.sleep(10)
 
 def getpopreddits():
     srlist = []
